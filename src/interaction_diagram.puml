@@ -1,0 +1,31 @@
+@startuml
+actor Publisher
+actor Subscriber
+actor Broker as CentralBroker
+
+Publisher -> CentralBroker: createTopic(topicId, topicName, publisherId)
+CentralBroker -> Broker: propagateTopicToOtherBrokers(topicId, topicName, publisherId)
+
+Publisher -> CentralBroker: publishMessage(topicId, message, publisherId)
+CentralBroker -> Broker: forwardMessageToOtherBrokers(topicId, message)
+
+Subscriber -> CentralBroker: subscribeToTopic(topicId)
+CentralBroker -> Subscriber: addSubscriber(subscriberId, topicId)
+
+Subscriber -> CentralBroker: listAllAvailableTopics()
+CentralBroker -> Broker: retrieveAllTopics()
+
+Subscriber -> CentralBroker: receiveMessage(topicId, message)
+CentralBroker -> Broker: showSubscriberCount(topicId)
+
+Subscriber -> CentralBroker: showCurrentSubscriptions(subscriberId)
+CentralBroker -> Subscriber: displaySubscriptions(subscriberId)
+
+Publisher -> CentralBroker: deleteTopic(topicId, publisherId)
+CentralBroker -> Broker: notifyOtherBrokersToDeleteTopic(topicId)
+CentralBroker -> Subscriber: receiveMessage(topicId, "Topic deleted")
+
+Subscriber -> CentralBroker: unsubscribeFromTopic(topicId)
+CentralBroker -> Broker: removeSubscriber(subscriberId, topicId)
+
+@enduml
